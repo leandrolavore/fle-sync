@@ -9,12 +9,10 @@ fn main() -> Result<(), std::io::Error> {
     let path = io.get_file_path();
     let mut file_handler = FileHandler::new();
 
-    match file_handler.read_directory(&path) {
-        Ok(content) => println!(
-            "🚀 ~ file: main.rs ~ line 12 ~ fn main ~ content: {:?}",
-            content
-        ),
-        Err(e) => eprintln!("Error reading directory: {}", e),
-    };
+    let origin_directory_content = file_handler.read_directory(&path)?;
+    let target_directory_content = file_handler.read_directory("./test_destination")?;
+
+    file_handler.log_directory_struct(&origin_directory_content);
+
     Ok(())
 }

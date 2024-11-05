@@ -4,14 +4,16 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use super::logger::Logger;
+
 pub struct FileHandler;
 
 #[derive(Debug)]
 pub enum VecContent {
     File {
         name: PathBuf,
-        // metadata: Metadata,
-        // contents: Vec<u8>,
+        metadata: Metadata,
+        contents: Vec<u8>,
     },
     Directory(Vec<VecContent>),
 }
@@ -51,10 +53,33 @@ impl FileHandler {
 
         let file_data = VecContent::File {
             name: PathBuf::from(path),
-            // metadata: fs::metadata(path)?,
-            // contents: data,
+            metadata: fs::metadata(path)?,
+            contents: data,
         };
 
         Ok(file_data)
+    }
+
+    pub fn log_directory_struct(&self, vec: &Vec<VecContent>) -> Result<(), std::io::Error> {
+        let logger = Logger::new();
+        let log_path = "./log.txt";
+
+        for entry in vec {
+            match entry {
+                VecContent::File {
+                    name,
+                    metadata,
+                    contents,
+                } => {
+                    let file_path = &name.to_string_lossy();
+                    logger.write_log(file_path, &log_path);
+                }
+                VecContent::Directory(vector) => {
+                    self.log_directory_struct(vector);
+                }
+            }
+        }
+
+        Ok(())
     }
 }
