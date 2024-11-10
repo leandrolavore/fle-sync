@@ -8,6 +8,15 @@ impl Logger {
         Logger
     }
 
+    pub fn clear_log(&self, file_name: &str) -> std::io::Result<()> {
+        OpenOptions::new()
+            .create(true)
+            .write(true)
+            .truncate(true)
+            .open(file_name)?;
+        Ok(())
+    }
+
     pub fn write_log(&self, message_line: &str, file_name: &str) -> std::io::Result<()> {
         let mut file = OpenOptions::new()
             .create(true)
